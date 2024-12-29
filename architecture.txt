@@ -1,0 +1,23 @@
+TypingTrainer/
+│
+├─ main.py                   # Einstiegspunkt des Programms
+├─ requirements.txt          # Liste der Python-Abhängigkeiten
+├─ README.md                 # Projektbeschreibung & Anleitung (noch anzupassen)
+│
+├─ app/                      # Hauptlogik des Programms
+│  ├─ __init__.py
+│  ├─ gui.py                 # Tkinter GUI Code
+│  ├─ logic.py               # Kernlogik (Analyse von Tippdaten, Ansteuerung Textgenerierung)
+│  ├─ data.py                # Datenbank-Operationen (SQLite)
+│  ├─ text_generator.py      # Lokale Textgenerierung (Markovify, NLTK)
+│  ├─ analysis.py            # Analysewerkzeuge (z. B. Häufigkeitsberechnung, Problemzeichen-Erkennung)
+│  └─ config.py              # Konfigurationen (z. B. Pfade, Einstellungen)
+│
+├─ data/
+│  └─ database.db            # SQLite-Datenbank (wird automatisch erstellt/initialisiert)
+│
+├─ resources/                # Zusatzdaten, Trainingskorpora etc.
+│  ├─ base_corpus.txt        # Basistexte für Markovify (später anpassen)
+│  └─ stopwords.txt          # Stopwords oder andere Listen (optional)
+│
+└─ venv/                     # Virtuelle Umgebung (nicht im Repo)
