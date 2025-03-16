@@ -10,10 +10,10 @@ BASE_CORPUS_PATH = os.path.join(os.path.dirname(__file__), '../resources/base_co
 MAX_TEXT_LENGTH = 300
 
 # Standardsprachmodell für spaCy
-SPACY_LANGUAGE_MODEL = "de_core_news_sm"
+SPACY_LANGUAGE_MODEL = "en_core_web_sm"
 
 # Anzahl der problematischsten Zeichen, die analysiert werden sollen
-TOP_PROBLEMATIC_CHARS = 5
+TOP_PROBLEMATIC_CHARS = 15
 
 # Standard-Parameter für Markovify
 MARKOVIFY_TRIES = 100  # Anzahl der Versuche, um gültige Sätze zu generieren

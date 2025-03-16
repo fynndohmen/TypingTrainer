@@ -13,3 +13,15 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+import tkinter as tk
+import tkinter.font as tkFont
+
+root = tk.Tk()
+available_fonts = tkFont.families()
+root.destroy()
+
+if "Rubik" in available_fonts:
+    print("✅ Rubik ist in Tkinter verfügbar!")
+else:
+    print("❌ Rubik wurde nicht von Tkinter erkannt.")

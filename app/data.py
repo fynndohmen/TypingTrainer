@@ -1,26 +1,15 @@
 import sqlite3
-import os
-
-# Pfad zur SQLite-Datenbank
-DB_PATH = os.path.join(os.path.dirname(__file__), '../data/database.db')
-
+from app.config import DB_PATH
 
 def get_connection():
-    """
-    Erstellt eine Verbindung zur SQLite-Datenbank.
-    """
+    """Erstellt eine Verbindung zur SQLite-Datenbank."""
     return sqlite3.connect(DB_PATH)
 
-
 def initialize_database():
-    """
-    Stellt sicher, dass die Datenbank und die notwendigen Tabellen existieren.
-    Wenn die Tabellen nicht existieren, werden sie erstellt.
-    """
+    """Erstellt die Datenbank und die Sessions-Tabelle, falls sie noch nicht existiert."""
     conn = get_connection()
     cursor = conn.cursor()
 
-    # Tabelle für Tippstatistiken
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS sessions (
             session_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,6 +22,7 @@ def initialize_database():
 
     conn.commit()
     conn.close()
+
 
 
 def save_session_stats(duration, error_count, total_chars_typed):

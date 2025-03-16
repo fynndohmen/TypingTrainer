@@ -1,45 +1,41 @@
 import os
 import markovify
+from app.config import MAX_TEXT_LENGTH  # ✅ Korrekt importieren mit "app."
 
 # Pfad zur Datei mit dem Basiskorpus
 BASE_CORPUS_PATH = os.path.join(os.path.dirname(__file__), '../resources/base_corpus.txt')
 
 def load_corpus():
-    """
-    Lädt den Text aus der Datei `base_corpus.txt`.
-
-    Returns:
-        str: Der gesamte Inhalt der Datei als String.
-    """
     if not os.path.exists(BASE_CORPUS_PATH):
         raise FileNotFoundError(f"Korpusdatei nicht gefunden: {BASE_CORPUS_PATH}")
 
     with open(BASE_CORPUS_PATH, 'r', encoding='utf-8') as file:
-        return file.read()
+        corpus = file.read().strip()
 
-def get_new_text(max_length=300):
-    """
-    Generiert einen neuen Text basierend auf einem Markov-Modell.
+    print(f"DEBUG: Corpus geladen, Länge: {len(corpus)} Zeichen")  # Debugging-Ausgabe
 
-    Args:
-        max_length (int): Maximale Anzahl der Zeichen für den generierten Text.
+    if not corpus:
+        raise ValueError("ERROR: Die Korpusdatei ist leer! Bitte fülle `base_corpus.txt` mit Text.")
 
-    Returns:
-        str: Ein generierter Text mit maximal `max_length` Zeichen.
-    """
+    return corpus
+
+def get_new_text(max_length=MAX_TEXT_LENGTH):  # ✅ MAX_TEXT_LENGTH ist jetzt richtig definiert
     corpus = load_corpus()
+    print(f"Corpus loaded successfully. Length: {len(corpus)} characters.")  # Debugging-Ausgabe
 
-    # Erstelle ein Markov-Modell aus dem geladenen Korpus
-    text_model = markovify.Text(corpus)
+    text_model = markovify.Text(corpus, state_size=2)
+    print("Markov model created successfully.")  # Debugging-Ausgabe
 
-    # Generiere neuen Text bis zur gewünschten Länge
     generated_text = ""
+
     while len(generated_text) < max_length:
         sentence = text_model.make_sentence(tries=100)
         if sentence:
+            if len(generated_text) + len(sentence) + 1 > max_length:
+                break
             generated_text += " " + sentence
         else:
-            break  # Falls keine weiteren Sätze generiert werden können
+            break
 
-    # Text auf die maximale Länge zuschneiden
-    return generated_text.strip()[:max_length]
+    print(f"Generated text: {generated_text[:50]}...")  # Zeigt den ersten Teil des generierten Textes an
+    return generated_text.strip()
