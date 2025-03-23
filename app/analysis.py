@@ -1,24 +1,20 @@
-import nltk
 from collections import Counter
-import spacy
 
-# Lade das spaCy-Modell für Deutsch (falls verwendet)
-try:
-    nlp = spacy.load("en_core_news_sm")
-except:
-    nlp = None
-    print("Hinweis: Das spaCy-Modell 'de_core_news_sm' wurde nicht geladen. Installiere es mit 'python -m spacy download de_core_news_sm'.")
 
 def analyze_typing_errors(typing_data):
     """
-    Analysiert Tippdaten, um problematische Zeichen zu identifizieren.
+    Analyzes typing data to identify average time and error count per character.
 
     Args:
-        typing_data (list): Liste von Dictionaries mit Tippdaten,
-            z.B. [{"char": "e", "time": 0.3, "correct": True}, ...]
+        typing_data (list): List of dicts like:
+            [{"char": "e", "time": 0.3, "correct": True}, ...]
 
     Returns:
-        dict: Problematische Zeichen mit durchschnittlicher Tippzeit und Fehleranzahl.
+        dict: A dictionary with characters as keys and statistics as values, e.g.:
+            {
+                "e": {"total_time": 1.2, "count": 5, "errors": 2, "average_time": 0.24},
+                ...
+            }
     """
     char_stats = {}
 
@@ -35,56 +31,55 @@ def analyze_typing_errors(typing_data):
         if not correct:
             char_stats[char]["errors"] += 1
 
-    # Berechne die durchschnittliche Tippzeit für jedes Zeichen
-    for char in char_stats:
-        stats = char_stats[char]
+    for char, stats in char_stats.items():
         stats["average_time"] = stats["total_time"] / stats["count"] if stats["count"] > 0 else 0
 
     return char_stats
 
-def most_problematic_chars(typing_data, top_n=5):
+
+def most_problematic_chars(typing_data, top_n=10):
     """
-    Gibt die problematischsten Zeichen basierend auf Tippfehlern und Tippzeit zurück.
+    Returns the top `top_n` most problematic characters based on a combined score.
+
+    The score is calculated as:
+        score = average_time + (1.0 * errors)
+
+    Each error adds the equivalent of 1 second to the average time.
+    Characters are sorted in descending order of this score.
 
     Args:
-        typing_data (list): Liste von Dictionaries mit Tippdaten.
-        top_n (int): Anzahl der problematischsten Zeichen, die zurückgegeben werden.
+        typing_data (list): List of typing records.
+        top_n (int): Number of characters to return.
 
     Returns:
-        list: Die problematischsten Zeichen sortiert nach Fehlern und Zeit.
+        list: List of tuples (char, stats), sorted by score descending.
     """
     char_stats = analyze_typing_errors(typing_data)
-    # Sortiere nach Tippfehlern, dann nach durchschnittlicher Tippzeit
-    sorted_chars = sorted(char_stats.items(), key=lambda x: (-x[1]["errors"], x[1]["average_time"]))
+
+    for char, stats in char_stats.items():
+        avg_t = stats.get("average_time", 0)
+        errs = stats.get("errors", 0)
+        stats["score"] = avg_t + (errs * 1.0)
+
+    sorted_chars = sorted(
+        char_stats.items(),
+        key=lambda x: x[1]["score"],
+        reverse=True
+    )
+
     return sorted_chars[:top_n]
+
 
 def letter_frequency_analysis(text):
     """
-    Analysiert die Häufigkeit von Buchstaben in einem Text.
+    Analyzes frequency of each alphabetical character in the given text.
 
     Args:
-        text (str): Eingabetext.
+        text (str): Input text.
 
     Returns:
-        list: Liste von Tupeln mit Buchstaben und deren Häufigkeiten, sortiert nach Häufigkeit.
+        list: List of tuples (letter, frequency), sorted descending.
     """
-    text = text.lower()  # Kleinbuchstaben vereinheitlichen
-    frequencies = Counter(char for char in text if char.isalpha())  # Nur Buchstaben zählen
+    text = text.lower()
+    frequencies = Counter(char for char in text if char.isalpha())
     return frequencies.most_common()
-
-def analyze_with_spacy(text):
-    """
-    Führt eine spaCy-Analyse durch (z. B. Tokenisierung, Wortartenanalyse).
-
-    Args:
-        text (str): Eingabetext.
-
-    Returns:
-        list: Liste von Tokens und deren Wortarten (falls spaCy verfügbar ist).
-    """
-    if not nlp:
-        raise RuntimeError("spaCy-Modell ist nicht geladen. Installiere es mit 'python -m spacy download de_core_news_sm'.")
-
-    doc = nlp(text)
-    return [(token.text, token.pos_) for token in doc]
-

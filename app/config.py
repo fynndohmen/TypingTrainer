@@ -1,20 +1,14 @@
 import os
 
-# Pfad zur SQLite-Datenbank
-DB_PATH = os.path.join(os.path.dirname(__file__), '../data/database.db')
-
-# Pfad zum Basiskorpus für die Textgenerierung
+# Path to the base corpus for text generation
 BASE_CORPUS_PATH = os.path.join(os.path.dirname(__file__), '../resources/base_corpus.txt')
 
-# Maximale Länge der generierten Texte
+# Maximum length of the generated texts
 MAX_TEXT_LENGTH = 300
 
-# Standardsprachmodell für spaCy
-SPACY_LANGUAGE_MODEL = "en_core_web_sm"
-
-# Anzahl der problematischsten Zeichen, die analysiert werden sollen
+# Number of problematic characters to analyze
 TOP_PROBLEMATIC_CHARS = 15
 
-# Standard-Parameter für Markovify
-MARKOVIFY_TRIES = 100  # Anzahl der Versuche, um gültige Sätze zu generieren
-MARKOVIFY_STATE_SIZE = 2  # Zustand für die Markov-Kette (je höher, desto kontextbewusster)
+# Default parameters for Markovify
+MARKOVIFY_TRIES = 100  # Number of attempts to generate valid sentences
+MARKOVIFY_STATE_SIZE = 1  # State size for the Markov chain (higher = more context-aware)
